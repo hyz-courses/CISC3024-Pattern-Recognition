@@ -126,8 +126,8 @@ def plot_transformed_img_in_grid(train_dataset: SVHNDataset,
           f"Image Tensor Size:{train_dataset.__getitem__(peak_index)[0].shape}")
 
 
-def display_epochs_loss_curve(train_losses: list,
-                              test_losses: list) -> None:
+def display_epochs_loss_curve(train_losses: List[float],
+                              test_losses: List[float]) -> None:
     plt.figure(figsize=(3, 3))
     plt.plot(train_losses, label="Training Loss")
     plt.plot(test_losses, label="Testing Loss")
@@ -138,8 +138,8 @@ def display_epochs_loss_curve(train_losses: list,
     plt.show()
 
 
-def display_confusion_matrix(true_labels: list,
-                             pred_labels: list) -> None:
+def display_confusion_matrix(true_labels: List[int],
+                             pred_labels: List[int]) -> None:
     cm = confusion_matrix(true_labels, pred_labels)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=range(0, 10))
     disp.plot(cmap=plt.cm.Blues)
@@ -147,7 +147,7 @@ def display_confusion_matrix(true_labels: list,
 
 
 def get_metrics(true_labels: List[int],
-                pred_labels: List[int]) -> Tuple[float, Any, Any, Any]:
+                pred_labels: List[int]) -> Tuple[float, np.array, np.array, np.array]:
     accuracy = accuracy_score(true_labels, pred_labels)
     precision = precision_score(true_labels, pred_labels, zero_division=1, average=None, labels=range(0, 10))
     recall = recall_score(true_labels, pred_labels, zero_division=1, average=None, labels=range(0, 10))
@@ -156,7 +156,8 @@ def get_metrics(true_labels: List[int],
     return accuracy, precision, recall, f1
 
 
-def display_precision_recall_curve(true_labels_bin, pred_scores):
+def display_precision_recall_curve(true_labels_bin: np.array,
+                                   pred_scores: List[List[float]]) -> None:
     for i in range(0, 10):
         precision_i, recall_i, _ = precision_recall_curve(true_labels_bin[:, i], np.array(pred_scores)[:, i])
         average_precision = average_precision_score(true_labels_bin[:, i], np.array(pred_scores)[:, i])

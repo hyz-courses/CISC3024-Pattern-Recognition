@@ -57,7 +57,7 @@ print(f"Train Size:{train_dataset.__len__()}\nTest Size:{test_dataset.__len__()}
 
 plot_transformed_img_in_grid(train_dataset, norm_mean, norm_std)  # utils
 
-num_epochs = 15
+num_epochs = 3
 learning_rate = 0.001
 model = SmallVGG().to(device)
 criterion = nn.CrossEntropyLoss()
@@ -108,10 +108,10 @@ def train_and_evaluate(model: SmallVGG,
 
 
 train_losses, test_losses = train_and_evaluate(model, train_loader, test_loader, criterion, optimizer, num_epochs)
-torch.save(model.state_dict(), f"./models/small_vgg_ne-{num_epochs}_lr-{learning_rate:.0e}.pth")
+torch.save(model.state_dict(), f"../models/small_vgg_ne-{num_epochs}_lr-{learning_rate:.0e}.pth")
 
 
-def get_predictions(model_path: Any, extra_loader: DataLoader) -> Tuple:
+def get_predictions(model_path: str, extra_loader: DataLoader) -> Tuple[List[List[float]], List[int], List[int]]:
     model_state = torch.load(model_path)
     model = SmallVGG()
     model.load_state_dict(model_state)
@@ -138,18 +138,8 @@ def get_predictions(model_path: Any, extra_loader: DataLoader) -> Tuple:
     return pred_scores, true_labels, pred_labels
 
 
-pred_scores, true_labels_cpu, pred_labels_cpu = get_predictions("./models/small_vgg_ne-30_lr-1e-03.pth", extra_loader)
-# print("First 100 true labels:")
-# [print(num, end=" ") for num in true_labels_cpu[:100]]
-# print("...\n")
-#
-# print("First 100 predictions:")
-# [print(num, end=" ") for num in pred_labels_cpu[:100]]
-# print("...\n")
-#
-# print("Prediction Probabilities:")
-# [print(arr) for arr in pred_scores[:5]]
-# print("...")
+pred_scores, true_labels_cpu, pred_labels_cpu = get_predictions(
+    f"../models/small_vgg_ne-{num_epochs}_lr-{learning_rate:.0e}.pth", extra_loader)
 
 display_epochs_loss_curve(train_losses, test_losses)  # utils
 
