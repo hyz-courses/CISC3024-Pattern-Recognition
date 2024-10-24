@@ -4,8 +4,10 @@ import torch.optim as optim
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import matplotlib.pyplot as plt
+from Cython.Utility.CppConvert import string
 from torch.utils.data import Dataset, DataLoader, Subset
 from tqdm import tqdm
+from typing import Tuple, List, Any
 
 import numpy as np
 import cv2
@@ -63,12 +65,12 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
 
-def train_and_evaluate(model,
-                       train_loader,
-                       test_loader,
-                       criterion,
-                       optimizer,
-                       num_epochs=100):
+def train_and_evaluate(model: SmallVGG,
+                       train_loader: DataLoader,
+                       test_loader: DataLoader,
+                       criterion: nn.CrossEntropyLoss,
+                       optimizer: optim.Optimizer,
+                       num_epochs=100) -> Tuple[List[float], List[float]]:
     # Record Losses to plot
     train_losses = []
     test_losses = []
@@ -110,7 +112,7 @@ train_losses, test_losses = train_and_evaluate(model, train_loader, test_loader,
 torch.save(model.state_dict(), f"./models/small_vgg_ne-{num_epochs}_lr-{learning_rate:.0e}.pth")
 
 
-def get_predictions(model_path, extra_loader):
+def get_predictions(model_path: string, extra_loader: DataLoader) -> Tuple:
     model_state = torch.load(model_path)
     model = SmallVGG()
     model.load_state_dict(model_state)
