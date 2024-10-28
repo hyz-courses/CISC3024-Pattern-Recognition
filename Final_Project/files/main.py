@@ -27,7 +27,7 @@ from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.preprocessing import label_binarize
 
 from utils import (SmallVGG, SVHNDataset, plot_transformed_img_in_grid, display_epochs_loss_curve,
-                   display_confusion_matrix, get_metrics, display_precision_recall_curve)
+                   display_confusion_matrix, get_metrics, display_precision_recall_curve, train_and_evaluate)
 
 device_name = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
 device = torch.device(device_name)
@@ -62,50 +62,6 @@ learning_rate = 0.001
 model = SmallVGG().to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-
-
-def train_and_evaluate(model: SmallVGG,
-                       train_loader: DataLoader,
-                       test_loader: DataLoader,
-                       criterion: nn.CrossEntropyLoss,
-                       optimizer: optim.Optimizer,
-                       num_epochs=100) -> Tuple[List[float], List[float]]:
-    # Record Losses to plot
-    train_losses = []
-    test_losses = []
-
-    for epoch in range(num_epochs):
-        # Train
-        model.train()
-        running_loss = 0.0
-        for images, labels in tqdm(train_loader):
-            images, labels = images.to(device), labels.to(device)
-
-            optimizer.zero_grad()
-            outputs = model(images)
-
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
-
-            running_loss += loss.item() * len(images)
-        train_losses.append(running_loss / len(train_loader))
-
-        # Evaluate
-        model.eval()
-        test_loss = 0.0
-        with torch.no_grad():
-            for images, labels in test_loader:
-                images, labels = images.to(device), labels.to(device)
-                outputs = model(images)
-                loss = criterion(outputs, labels)
-                test_loss += loss.item() * len(images)
-
-        test_losses.append(test_loss / len(test_loader))
-        print(f"Epoch[{epoch + 1}/{num_epochs}], Train Loss:{train_losses[-1]:.4f}, Test Loss:{test_losses[-1]:.4f}")
-
-    return train_losses, test_losses
-
 
 train_losses, test_losses = train_and_evaluate(model, train_loader, test_loader, criterion, optimizer, num_epochs)
 torch.save(model.state_dict(), f"../models/small_vgg_ne-{num_epochs}_lr-{learning_rate:.0e}.pth")

@@ -60,7 +60,6 @@ class SVHNDataset(Dataset):
 class SmallVGG(nn.Module):
     def __init__(self, frame_size=32):
         super(SmallVGG, self).__init__()
-        self.frame_size = frame_size
         self.conv_layers = nn.Sequential(
             nn.Conv2d(3, 8, kernel_size=3, padding=1),
             nn.ReLU(),
@@ -169,3 +168,45 @@ def display_precision_recall_curve(true_labels_bin: np.array,
     plt.title("Precision-Recall Curve")
     plt.legend(loc="best")
     plt.show()
+
+def train_and_evaluate(model: SmallVGG,
+                       train_loader: DataLoader,
+                       test_loader: DataLoader,
+                       criterion: nn.CrossEntropyLoss,
+                       optimizer: optim.Optimizer,
+                       num_epochs=100) -> Tuple[List[float], List[float]]:
+    # Record Losses to plot
+    train_losses = []
+    test_losses = []
+
+    for epoch in range(num_epochs):
+        # Train
+        model.train()
+        running_loss = 0.0
+        for images, labels in tqdm(train_loader):
+            images, labels = images.to(device), labels.to(device)
+
+            optimizer.zero_grad()
+            outputs = model(images)
+
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+
+            running_loss += loss.item() * len(images)
+        train_losses.append(running_loss / len(train_loader))
+
+        # Evaluate
+        model.eval()
+        test_loss = 0.0
+        with torch.no_grad():
+            for images, labels in test_loader:
+                images, labels = images.to(device), labels.to(device)
+                outputs = model(images)
+                loss = criterion(outputs, labels)
+                test_loss += loss.item() * len(images)
+
+        test_losses.append(test_loss / len(test_loader))
+        print(f"Epoch[{epoch + 1}/{num_epochs}], Train Loss:{train_losses[-1]:.4f}, Test Loss:{test_losses[-1]:.4f}")
+
+    return train_losses, test_losses
