@@ -16,10 +16,10 @@ import os
 import time
 
 import random
-import scipy.io as sio
 
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
+import scipy.io as sio
 
 from sklearn.metrics import (confusion_matrix, accuracy_score,
                              precision_score, recall_score,
@@ -77,8 +77,7 @@ def run_exp3_1(angles: List[float], crops: List[float], hyperparams):
             optimizer = optim.Adam(exp3_1_model.parameters(), lr=learning_rate)
 
             train_losses, test_losses = train_and_evaluate(exp3_1_model, train_loader, test_loader, criterion,
-                                                           optimizer,
-                                                           num_epochs)
+                                                           optimizer, num_epochs)
             experiments.append({
                 "angle": _angle,
                 "crop": _crop,
@@ -99,6 +98,7 @@ def run_exp3_1(angles: List[float], crops: List[float], hyperparams):
 # torch.save(exp3_1, f"./models/exp3_1_{time_str}.pth")
 
 # ==================================================================== #
+
 # Group 2
 candidate_ratios = [0.25, 0.42, 0.58, 0.75]  # Left Boundary
 candidate_channel_biases = [0, 32, 64, 128]
