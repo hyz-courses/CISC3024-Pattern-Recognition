@@ -3,5 +3,6 @@ cisc3024_pr_venv
 Final_Project/data
 Final_Project/report
 Final_Project/files/__pycache__/*
+Final_Project/models/*
 .DS_Store
 .idea/
