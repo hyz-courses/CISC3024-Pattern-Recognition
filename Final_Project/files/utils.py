@@ -6,7 +6,8 @@ import torchvision.datasets as datasets
 import matplotlib.pyplot as plt
 from torch.utils.data import Dataset, DataLoader, Subset
 from tqdm import tqdm
-from typing import Tuple, List, Any
+from typing import Tuple, List, Any, Union
+from PIL import Image
 
 import numpy as np
 import cv2
@@ -29,11 +30,6 @@ from sklearn.preprocessing import label_binarize
 
 device_name = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
 device = torch.device(device_name)
-
-
-# path_dataset = "../data/SVHN_mat"
-# norm_mean = [0.4377, 0.4438, 0.4728]
-# norm_std = [0.1980, 0.2010, 0.1970]
 
 
 class SVHNDataset(Dataset):
@@ -93,6 +89,7 @@ class SmallVGG(nn.Module):
         return x
 
 
+# ============================== For Plotting ============================= #
 def _anti_normalize(img, mean, std):
     """Revert the normalization for visualization."""
     img = img * std + mean
@@ -169,6 +166,8 @@ def display_precision_recall_curve(true_labels_bin: np.array,
     plt.legend(loc="best")
     plt.show()
 
+
+# ================================ main.py ================================ #
 def train_and_evaluate(model: SmallVGG,
                        train_loader: DataLoader,
                        test_loader: DataLoader,
@@ -210,3 +209,40 @@ def train_and_evaluate(model: SmallVGG,
         print(f"Epoch[{epoch + 1}/{num_epochs}], Train Loss:{train_losses[-1]:.4f}, Test Loss:{test_losses[-1]:.4f}")
 
     return train_losses, test_losses
+
+
+# ============================= experiment.py ============================= #
+class AddBiasTransform:
+    def __init__(self, bias: Union[int, Tuple[int, int]]) -> None:
+        if isinstance(bias, tuple):
+            self.bias1 = bias[0]
+            self.bias2 = bias[1]
+        else:
+            self.bias1 = 0
+            self.bias2 = bias
+
+    def __call__(self, img: Image.Image) -> Image.Image:
+        img = np.array(img)
+
+        bias_value = random.randint(self.bias1, self.bias2)
+        img = (img + bias_value) % 256
+        img = img.astype(np.uint8)
+
+        return Image.fromarray(img)
+
+
+def add_bias(data: np.array, bias: Union[int, Tuple[int, int]]) -> np.array:
+    if isinstance(bias, tuple):
+        bias1 = bias[0]
+        bias2 = bias[1]
+    else:
+        bias1 = 0
+        bias2 = bias
+
+    for i in range(data.shape[0]):
+        bias_value = random.randint(bias1, bias2)
+        img = data[i].astype(np.int16)
+        img = (img + bias_value) % 256
+        data[i] = img.astype(np.float32) / 256
+
+    return data
