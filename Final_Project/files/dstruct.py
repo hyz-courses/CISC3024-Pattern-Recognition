@@ -31,42 +31,34 @@ class SVHNDataset(Dataset):
 
 
 class SmallVGG(nn.Module):
-    def __init__(self, frame_size=32, struct: Tuple[nn.Sequential, nn.Sequential] = None, act_func: Module = None):
+    def __init__(self, frame_size=32):
         super(SmallVGG, self).__init__()
-        if act_func is not None:
-            self.activation = act_func
-        else:
-            self.activation = nn.ReLU()
+        self.frame_size = frame_size
+        self.conv_layers = nn.Sequential(
+            nn.Conv2d(3, 8, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(8, 16, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),  # 16x16
 
-        if struct is not None:
-            self.conv_layers = struct[0]
-            self.fc_layers = struct[1]
-        else:
-            self.conv_layers = nn.Sequential(
-                nn.Conv2d(3, 8, kernel_size=3, padding=1),
-                nn.ReLU(),
-                nn.Conv2d(8, 16, kernel_size=3, padding=1),
-                nn.ReLU(),
-                nn.MaxPool2d(kernel_size=2, stride=2),  # 16x16
+            nn.Conv2d(16, 32, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(32, 32, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),  # 8x8
 
-                nn.Conv2d(16, 32, kernel_size=3, padding=1),
-                nn.ReLU(),
-                nn.Conv2d(32, 32, kernel_size=3, padding=1),
-                nn.ReLU(),
-                nn.MaxPool2d(kernel_size=2, stride=2),  # 8x8
+            nn.Conv2d(32, 32, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(32, 32, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),  # 4x4
+        )
 
-                nn.Conv2d(32, 32, kernel_size=3, padding=1),
-                nn.ReLU(),
-                nn.Conv2d(32, 32, kernel_size=3, padding=1),
-                nn.ReLU(),
-                nn.MaxPool2d(kernel_size=2, stride=2),  # 4x4
-            )
-
-            self.fc_layers = nn.Sequential(
-                nn.Linear(frame_size * 4 * 4, 256),
-                nn.ReLU(),
-                nn.Linear(256, 10)
-            )
+        self.fc_layers = nn.Sequential(
+            nn.Linear(frame_size * 4 * 4, 256),
+            nn.ReLU(),
+            nn.Linear(256, 10)
+        )
 
     def forward(self, x):
         x = self.conv_layers(x)
@@ -104,19 +96,21 @@ candidate_seq: List[Tuple[Union[TypingOrderedDict[str, None], TypingOrderedDict[
 
         ('conv3', nn.Conv2d(16, 32, kernel_size=3, padding=1)),
         ('*3', None),
-        ('conv4', nn.Conv2d(32, 32, kernel_size=3, padding=1)),
+        ('conv4', nn.Conv2d(32, 48, kernel_size=3, padding=1)),
         ('*4', None),
         ('max2', nn.MaxPool2d(kernel_size=2, stride=2)),  # 8x8
 
-        ('conv5', nn.Conv2d(32, 32, kernel_size=3, padding=1)),
+        ('conv5', nn.Conv2d(48, 56, kernel_size=3, padding=1)),
         ('*5', None),
-        ('conv6', nn.Conv2d(32, 32, kernel_size=3, padding=1)),
+        ('conv6', nn.Conv2d(56, 64, kernel_size=3, padding=1)),
         ('*6', None),
         ('max3', nn.MaxPool2d(kernel_size=2, stride=2))  # 4x4
     ]), OrderedDict([
-        ('fc1', nn.Linear(32 * 4 * 4, 256)),
+        ('fc1', nn.Linear(64 * 4 * 4, 512)),
         ('*1', None),
-        ('fc2', nn.Linear(256, 10))
+        ('fc2', nn.Linear(512, 256)),
+        ('*2', None),
+        ('fc3', nn.Linear(256, 10))
     ])),
     (OrderedDict([  # second struct
         ('conv1', nn.Conv2d(3, 8, kernel_size=3, padding=1)),
@@ -188,5 +182,6 @@ candidate_seq: List[Tuple[Union[TypingOrderedDict[str, None], TypingOrderedDict[
         ('fc2', nn.Linear(256, 10))
     ]))
 ]
+candidate_seq_name = {'croissant-like', 'optional1', 'optional2', 'optional3', }
 
 candidate_activation_func: List[nn.Module] = [nn.ReLU(), nn.ELU(), nn.LeakyReLU(), nn.SiLU()]

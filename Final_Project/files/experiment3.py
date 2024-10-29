@@ -92,6 +92,7 @@ candidate_channel_biases = [0, 32, 64, 128]
 exp3_2_hyperparams: Dict[str, Union[int, float]] = dict(num_epochs=15, lr=0.001,
                                                         angle=45, crop=0.08)
 
+
 def run_exp3_2(ratios: List[float], biases: List[int], hyperparams: Dict[str, Union[int, float]],
                train_dataset: SVHNDataset,
                test_dataset: SVHNDataset) -> List[Dict[str, Union[List[float], dict, float, int]]]:
@@ -104,7 +105,7 @@ def run_exp3_2(ratios: List[float], biases: List[int], hyperparams: Dict[str, Un
             cnt += 1
 
             this_transform = A.Compose([
-                A.Lambda(image=lambda img, **kwargs: AddBiasTransform(_bias)(img)), # Lambda customized transform block
+                A.Lambda(image=lambda img, **kwargs: AddBiasTransform(_bias)(img)),  # Lambda customized transform block
                 A.RandomResizedCrop(32, 32, scale=(hyperparams['crop'], 1.0), ratio=(_ratio, 1.0 / _ratio)),
                 A.Rotate(limit=hyperparams['angle']),
                 A.Normalize(mean=dvalue.FULL_BIAS_norm_mean[i], std=dvalue.FULL_BIAS_norm_std[i]),
