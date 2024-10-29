@@ -89,7 +89,7 @@ exp3_test_dataset = SVHNDataset(mat_file=os.path.join(path_dataset, "test_32x32.
 candidate_ratios = [0.25, 0.42, 0.58, 0.75]  # Left Boundary
 candidate_channel_biases = [0, 32, 64, 128]
 
-exp3_2_hyperparams: Dict[str, Union[int, float]] = dict(num_epochs=1, lr=0.001,
+exp3_2_hyperparams: Dict[str, Union[int, float]] = dict(num_epochs=15, lr=0.001,
                                                         angle=45, crop=0.08)
 
 def run_exp3_2(ratios: List[float], biases: List[int], hyperparams: Dict[str, Union[int, float]],

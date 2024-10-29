@@ -26,5 +26,14 @@ TRAIN_BIAS_norm_std: Tuple[List[float], List[float], List[float], List[float]] =
     [0.207664, 0.20977464, 0.20946072], [0.5766456, 0.5753719, 0.5847802])
 """norm_std of only "train_32x32.mat" """
 
+# ==================================================================== #
 
+candidate_angles = [15, 30, 45, 60]
+candidate_crops = [0.08, 0.24, 0.40, 0.60]  # Left Boundary
 
+candidate_ratios = [0.25, 0.42, 0.58, 0.75]  # Left Boundary
+candidate_channel_biases = [0, 32, 64, 128]
+
+candidate_batch_size = [64, 128, 256, 512]
+
+candidate_drop_rate = [0.1, 0.23, 0.37, 0.5]

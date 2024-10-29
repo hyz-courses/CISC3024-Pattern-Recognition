@@ -1,5 +1,6 @@
 import random
-from typing import Tuple, List, Union
+from typing import Tuple, List, Union, OrderedDict as TypingOrderedDict
+from collections import OrderedDict
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -18,6 +19,7 @@ from dstruct import (SVHNDataset, SmallVGG)
 
 device_name = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
 device = torch.device(device_name)
+
 
 # ============================== For Plotting ============================= #
 def _anti_normalize(img, mean, std):
@@ -159,4 +161,22 @@ def _add_bias(data: np.array, bias: Union[int, Tuple[int, int]]) -> np.array:
 
     return data
 
+
 # ============================= experiment4.py ============================= #
+
+def mix_seq_and_act(seq: Tuple[TypingOrderedDict, TypingOrderedDict],
+                    activation_func: nn.Module) -> Tuple[nn.Sequential, nn.Sequential]:
+    """
+    replace all layers whose names start with '*' to the selected activation function
+    """
+    conv_seq = seq[0].copy()
+    for name, module in conv_seq.items():
+        if name.startswith('*'):
+            conv_seq[name] = activation_func
+
+    fc_seq = seq[1].copy()
+    for name, module in fc_seq.items():
+        if name.startswith('*'):
+            fc_seq[name] = activation_func
+
+    return nn.Sequential(conv_seq), nn.Sequential(fc_seq)
