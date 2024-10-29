@@ -33,7 +33,7 @@ device_name = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.m
 device = torch.device(device_name)
 print(f"Using device: {device_name}")
 
-path_dataset = "../data/SVHN_mat"
+path_dataset = os.path.exists("../data") and "../data/SVHN_mat" or "./data/SVHN_mat"
 norm_mean = [0.4377, 0.4438, 0.4728]
 norm_std = [0.1980, 0.2010, 0.1970]
 

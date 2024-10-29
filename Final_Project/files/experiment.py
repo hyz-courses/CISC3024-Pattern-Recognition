@@ -37,7 +37,7 @@ import dvalue
 device_name = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
 device = torch.device(device_name)
 
-path_dataset = "../data/SVHN_mat"
+path_dataset = os.path.exists("../data") and "../data/SVHN_mat" or "./data/SVHN_mat"
 norm_mean = dvalue.TA_norm_mean
 norm_std = dvalue.TA_norm_std
 
@@ -158,12 +158,14 @@ def run_exp3_2(ratios: List[float], biases: List[int], hyperparams: Dict[str, Un
             del train_loader, test_loader, this_transform
             torch.cuda.empty_cache()
 
-        return experiments
+    return experiments
 
 
 exp3_2 = run_exp3_2(candidate_ratios, candidate_channel_biases, exp3_2_hyperparams,
                     exp3_train_dataset, exp3_test_dataset)
 time_str = str(time.time()).replace(".", "")
-torch.save(exp3_2, f"./models/exp3_2_{time_str}.pth")
+
+models_dir_path = os.path.exists("../models") and "../models" or "./models"
+torch.save(exp3_2, f"{models_dir_path}/exp3_2_{time_str}.pth")
 
 # ==================================================================== #
