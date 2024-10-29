@@ -1,95 +1,23 @@
+import random
+from typing import Tuple, List, Union
+
+import matplotlib.pyplot as plt
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torchvision.transforms as transforms
-import torchvision.datasets as datasets
-import matplotlib.pyplot as plt
-from albumentations import Compose
-from torch.utils.data import Dataset, DataLoader, Subset
-from tqdm import tqdm
-from typing import Tuple, List, Any, Union
-from PIL import Image
-
-import numpy as np
-import cv2
-import os
-import time
-
-import random
-
-import albumentations as A
-from albumentations.pytorch import ToTensorV2
-import scipy.io as sio
-
+from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import (confusion_matrix, accuracy_score,
                              precision_score, recall_score,
-                             f1_score, roc_auc_score,
-                             roc_curve, precision_recall_curve,
+                             f1_score, precision_recall_curve,
                              average_precision_score)
-from sklearn.metrics import ConfusionMatrixDisplay
-from sklearn.preprocessing import label_binarize
+from torch.utils.data import DataLoader
+from tqdm import tqdm
+
+from dstruct import (SVHNDataset, SmallVGG)
 
 device_name = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
 device = torch.device(device_name)
-
-
-class SVHNDataset(Dataset):
-    def __init__(self, mat_file, transform_component=None):
-        data = sio.loadmat(mat_file)
-        self.images = np.transpose(data['X'], (3, 0, 1, 2))
-        self.labels = data['y'].flatten()
-        self.labels[self.labels == 10] = 0
-        self.transform = transform_component
-
-    def __len__(self):
-        return len(self.labels)
-
-    def __getitem__(self, idx):
-        image = self.images[idx]
-        label = self.labels[idx]
-
-        if self.transform:
-            tmp = self.transform(image=image)
-            image = tmp['image']
-
-        return image, label
-
-
-class SmallVGG(nn.Module):
-    def __init__(self, frame_size=32):
-        super(SmallVGG, self).__init__()
-        self.conv_layers = nn.Sequential(
-            nn.Conv2d(3, 8, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(8, 16, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2),  # 16x16
-
-            nn.Conv2d(16, 32, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(32, 32, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2),  # 8x8
-
-            nn.Conv2d(32, 32, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(32, 32, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2),  # 4x4
-        )
-
-        self.fc_layers = nn.Sequential(
-            nn.Linear(frame_size * 4 * 4, 256),
-            nn.ReLU(),
-            nn.Linear(256, 10)
-        )
-
-    def forward(self, x):
-        x = self.conv_layers(x)
-        x = x.view(x.size(0), -1)
-        x = self.fc_layers(x)
-        return x
-
 
 # ============================== For Plotting ============================= #
 def _anti_normalize(img, mean, std):
@@ -213,24 +141,9 @@ def train_and_evaluate(model: SmallVGG,
     return train_losses, test_losses
 
 
-# ============================= experiment.py ============================= #
-class AddBiasTransform:
-    def __init__(self, bias: Union[int, Tuple[int, int]]) -> None:
-        if isinstance(bias, tuple):
-            self.bias1 = bias[0]
-            self.bias2 = bias[1]
-        else:
-            self.bias1 = 0
-            self.bias2 = bias
+# ============================= experiment3.py ============================= #
 
-    def __call__(self, img: np.ndarray) -> np.ndarray:
-        _dtype = img.dtype
-        bias_value = random.randint(self.bias1, self.bias2)
-        img = (img.astype(np.int16) + bias_value) % 256
-        return img.astype(_dtype)
-
-
-def add_bias(data: np.array, bias: Union[int, Tuple[int, int]]) -> np.array:
+def _add_bias(data: np.array, bias: Union[int, Tuple[int, int]]) -> np.array:
     if isinstance(bias, tuple):
         bias1 = bias[0]
         bias2 = bias[1]
@@ -245,3 +158,5 @@ def add_bias(data: np.array, bias: Union[int, Tuple[int, int]]) -> np.array:
         data[i] = img.astype(np.float32) / 256
 
     return data
+
+# ============================= experiment4.py ============================= #

@@ -1,38 +1,17 @@
+import os
+import time
+from typing import List, Union, Dict
+
+import albumentations as A
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torchvision.transforms as transforms
-import torchvision.datasets as datasets
-import matplotlib.pyplot as plt
-from sympy.physics.units.definitions.dimension_definitions import angle
-from torch.utils.data import Dataset, DataLoader, Subset
-from tqdm import tqdm
-from typing import Tuple, List, Any, Union, Dict
-from PIL import Image
-
-import numpy as np
-import cv2
-import os
-import time
-
-import random
-
-import albumentations as A
 from albumentations.pytorch import ToTensorV2
-import scipy.io as sio
+from torch.utils.data import DataLoader
 
-from sklearn.metrics import (confusion_matrix, accuracy_score,
-                             precision_score, recall_score,
-                             f1_score, roc_auc_score,
-                             roc_curve, precision_recall_curve,
-                             average_precision_score)
-from sklearn.metrics import ConfusionMatrixDisplay
-from sklearn.preprocessing import label_binarize
-
-from utils import (SmallVGG, SVHNDataset, plot_transformed_img_in_grid, display_epochs_loss_curve,
-                   display_confusion_matrix, get_metrics, display_precision_recall_curve,
-                   train_and_evaluate, add_bias, AddBiasTransform)
 import dvalue
+from dstruct import (SVHNDataset, SmallVGG, AddBiasTransform)
+from utils import (train_and_evaluate)
 
 device_name = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
 device = torch.device(device_name)
@@ -110,7 +89,7 @@ exp3_test_dataset = SVHNDataset(mat_file=os.path.join(path_dataset, "test_32x32.
 candidate_ratios = [0.25, 0.42, 0.58, 0.75]  # Left Boundary
 candidate_channel_biases = [0, 32, 64, 128]
 
-exp3_2_hyperparams: Dict[str, Union[int, float]] = dict(num_epochs=15, lr=0.001,
+exp3_2_hyperparams: Dict[str, Union[int, float]] = dict(num_epochs=1, lr=0.001,
                                                         angle=45, crop=0.08)
 
 def run_exp3_2(ratios: List[float], biases: List[int], hyperparams: Dict[str, Union[int, float]],
@@ -125,7 +104,7 @@ def run_exp3_2(ratios: List[float], biases: List[int], hyperparams: Dict[str, Un
             cnt += 1
 
             this_transform = A.Compose([
-                # A.Lambda(image=AddBiasTransform(_bias)),  # Lambda customized transform block
+                A.Lambda(image=lambda img, **kwargs: AddBiasTransform(_bias)(img)), # Lambda customized transform block
                 A.RandomResizedCrop(32, 32, scale=(hyperparams['crop'], 1.0), ratio=(_ratio, 1.0 / _ratio)),
                 A.Rotate(limit=hyperparams['angle']),
                 A.Normalize(mean=dvalue.FULL_BIAS_norm_mean[i], std=dvalue.FULL_BIAS_norm_std[i]),
