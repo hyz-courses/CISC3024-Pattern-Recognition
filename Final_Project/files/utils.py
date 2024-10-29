@@ -4,6 +4,7 @@ import torch.optim as optim
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import matplotlib.pyplot as plt
+from albumentations import Compose
 from torch.utils.data import Dataset, DataLoader, Subset
 from tqdm import tqdm
 from typing import Tuple, List, Any, Union
@@ -48,7 +49,8 @@ class SVHNDataset(Dataset):
         label = self.labels[idx]
 
         if self.transform:
-            image = self.transform(image=image)['image']
+            tmp = self.transform(image=image)
+            image = tmp['image']
 
         return image, label
 
@@ -221,14 +223,11 @@ class AddBiasTransform:
             self.bias1 = 0
             self.bias2 = bias
 
-    def __call__(self, img: Image.Image) -> Image.Image:
-        img = np.array(img)
-
+    def __call__(self, img: np.ndarray) -> np.ndarray:
+        _dtype = img.dtype
         bias_value = random.randint(self.bias1, self.bias2)
-        img = (img + bias_value) % 256
-        img = img.astype(np.uint8)
-
-        return Image.fromarray(img)
+        img = (img.astype(np.int16) + bias_value) % 256
+        return img.astype(_dtype)
 
 
 def add_bias(data: np.array, bias: Union[int, Tuple[int, int]]) -> np.array:
