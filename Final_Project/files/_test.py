@@ -1,12 +1,18 @@
+import os
+import time
+from typing import List, Union, Dict
+
+import albumentations as A
+import torch
 import torch.nn as nn
-from collections import OrderedDict
-from typing import OrderedDict as TypingOrderedDict
+import torch.optim as optim
+from albumentations.pytorch import ToTensorV2
+from torch.utils.data import DataLoader
 
-from Final_Project.files import utils, dstruct
+import dvalue
+from dstruct import (SVHNDataset, SmallVGG, AddBiasTransform)
+from utils import (train_and_evaluate)
 
-selected_seq = dstruct.candidate_seq[0]
-selected_act = dstruct.candidate_activation_func[0]
+path_dataset = os.path.exists("../data") and "../data/SVHN_mat" or "./data/SVHN_mat"
 
-final_seq = utils.mix_seq_and_act(selected_seq, selected_act)
-
-print(final_seq)
+# ================= #
