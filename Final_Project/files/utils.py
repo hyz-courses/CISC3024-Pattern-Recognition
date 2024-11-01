@@ -157,7 +157,7 @@ def _add_bias(data: np.array, bias: Union[int, Tuple[int, int]]) -> np.array:
         bias_value = random.randint(bias1, bias2)
         img = data[i].astype(np.int16)
         img = (img + bias_value) % 256
-        data[i] = img.astype(np.float32) / 256
+        data[i] = img.astype(np.uint8)
 
     return data
 
