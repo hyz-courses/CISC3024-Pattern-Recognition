@@ -27,61 +27,61 @@ exp3_test_dataset = SVHNDataset(mat_file=os.path.join(path_dataset, "test_32x32.
 # ==================================================================== #
 
 # Group 1
-# candidate_angles = [15, 30, 45, 60]
-# candidate_crops = [0.08, 0.24, 0.40, 0.60]  # Left Boundary
-# exp3_1_hyperparams = dict(num_epochs=15, lr=0.001)
-#
-#
-# def run_exp3_1(angles: List[float], crops: List[float], hyperparams: Dict[str, Union[int, float]],
-#                train_dataset: SVHNDataset,
-#                test_dataset: SVHNDataset) -> List[Dict[str, Union[List[float], dict, float, int]]]:
-#     experiments = []
-#     cnt = 1
-#     for _angle in angles:
-#         for _crop in crops:
-#             print(f"Experiment {cnt}. Running experiment on angle: {_angle} with crop size: {_crop}")
-#             cnt += 1
-#
-#             this_transform = A.Compose([
-#                 A.RandomResizedCrop(32, 32, scale=(_crop, 1.0)),
-#                 A.Rotate(limit=_angle),
-#                 A.Normalize(mean=norm_mean, std=norm_std),
-#                 ToTensorV2()
-#             ])
-#
-#             train_dataset.transform = this_transform
-#             test_dataset.transform = this_transform
-#
-#             train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
-#             test_loader = DataLoader(test_dataset, batch_size=128, shuffle=False)
-#
-#             num_epochs = hyperparams['num_epochs']
-#             learning_rate = hyperparams['lr']
-#             exp3_1_model = SmallVGG().to(device)
-#             criterion = nn.CrossEntropyLoss()
-#             optimizer = optim.Adam(exp3_1_model.parameters(), lr=learning_rate)
-#
-#             train_losses, test_losses = train_and_evaluate(exp3_1_model, train_loader, test_loader, criterion,
-#                                                            optimizer, num_epochs)
-#             experiments.append({
-#                 "angle": _angle,
-#                 "crop": _crop,
-#                 "train_losses": train_losses,
-#                 "test_losses": test_losses,
-#                 "model_state_dict": exp3_1_model.state_dict()
-#             })
-#
-#             del exp3_1_model, criterion, optimizer
-#             del train_loader, test_loader
-#             torch.cuda.empty_cache()
-#
-#         return experiments
+candidate_angles = [15, 30, 45, 60]
+candidate_crops = [0.08, 0.24, 0.40, 0.60]  # Left Boundary
+exp3_1_hyperparams = dict(num_epochs=15, lr=0.001)
 
 
-# exp3_1 = run_exp3_1(candidate_angles, candidate_crops, exp3_1_hyperparams,
-#                     exp3_train_dataset, exp3_test_dataset)
-# time_str = str(time.time()).replace(".", "")
-# torch.save(exp3_1, f"./models/exp3_1_{time_str}.pth")
+def run_exp3_1(angles: List[float], crops: List[float], hyperparams: Dict[str, Union[int, float]],
+               train_dataset: SVHNDataset,
+               test_dataset: SVHNDataset) -> List[Dict[str, Union[List[float], dict, float, int]]]:
+    experiments = []
+    cnt = 1
+    for _angle in angles:
+        for _crop in crops:
+            print(f"Experiment {cnt}. Running experiment on angle: {_angle} with crop size: {_crop}")
+            cnt += 1
+
+            this_transform = A.Compose([
+                A.RandomResizedCrop(32, 32, scale=(_crop, 1.0)),
+                A.Rotate(limit=_angle),
+                A.Normalize(mean=norm_mean, std=norm_std),
+                ToTensorV2()
+            ])
+
+            train_dataset.transform = this_transform
+            test_dataset.transform = this_transform
+
+            train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
+            test_loader = DataLoader(test_dataset, batch_size=128, shuffle=False)
+
+            num_epochs = hyperparams['num_epochs']
+            learning_rate = hyperparams['lr']
+            exp3_1_model = SmallVGG().to(device)
+            criterion = nn.CrossEntropyLoss()
+            optimizer = optim.Adam(exp3_1_model.parameters(), lr=learning_rate)
+
+            train_losses, test_losses = train_and_evaluate(exp3_1_model, train_loader, test_loader, criterion,
+                                                           optimizer, num_epochs)
+            experiments.append({
+                "angle": _angle,
+                "crop": _crop,
+                "train_losses": train_losses,
+                "test_losses": test_losses,
+                "model_state_dict": exp3_1_model.state_dict()
+            })
+
+            del exp3_1_model, criterion, optimizer
+            del train_loader, test_loader
+            torch.cuda.empty_cache()
+
+        return experiments
+
+
+exp3_1 = run_exp3_1(candidate_angles, candidate_crops, exp3_1_hyperparams,
+                    exp3_train_dataset, exp3_test_dataset)
+time_str = str(time.time()).replace(".", "")
+torch.save(exp3_1, f"./models/exp3_1_{time_str}.pth")
 
 # ==================================================================== #
 
