@@ -51,9 +51,9 @@ transform = A.Compose([
     ToTensorV2()
 ])
 
-train_dataset = SVHNDataset(mat_file=os.path.join(path_dataset, "train_32x32.mat"), transform_component=transform)
-test_dataset = SVHNDataset(mat_file=os.path.join(path_dataset, "test_32x32.mat"), transform_component=transform)
-extra_dataset = SVHNDataset(mat_file=os.path.join(path_dataset, "extra_32x32.mat"), transform_component=transform)
+train_dataset = SVHNDataset(mat_file=os.path.join(path_dataset, "train_32x32.mat"), transform=transform)
+test_dataset = SVHNDataset(mat_file=os.path.join(path_dataset, "test_32x32.mat"), transform=transform)
+extra_dataset = SVHNDataset(mat_file=os.path.join(path_dataset, "extra_32x32.mat"), transform=transform)
 
 train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=128, shuffle=False)

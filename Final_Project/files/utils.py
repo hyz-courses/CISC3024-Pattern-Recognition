@@ -100,15 +100,21 @@ def display_precision_recall_curve(true_labels_bin: np.array,
 
 
 # ================================ main.py ================================ #
-def train_and_evaluate(model: SmallVGG,
-                       train_loader: DataLoader,
-                       test_loader: DataLoader,
-                       criterion: nn.CrossEntropyLoss,
-                       optimizer: optim.Optimizer,
-                       num_epochs=100) -> Tuple[List[float], List[float]]:
+def train_and_evaluate(model,
+                       train_loader,
+                       valid_loader,
+                       criterion,
+                       optimizer,
+                       num_epochs=100,
+                       stop_early_params=None):
     # Record Losses to plot
     train_losses = []
-    test_losses = []
+    valid_losses = []
+
+    # Early stop params
+    current_optimized_model = None
+    current_min_valid_loss = np.inf
+    num_overfit_epochs = 0
 
     for epoch in range(num_epochs):
         # Train
@@ -116,7 +122,6 @@ def train_and_evaluate(model: SmallVGG,
         running_loss = 0.0
         for images, labels in tqdm(train_loader):
             images, labels = images.to(device), labels.to(device)
-
             optimizer.zero_grad()
             outputs = model(images)
 
@@ -129,18 +134,35 @@ def train_and_evaluate(model: SmallVGG,
 
         # Evaluate
         model.eval()
-        test_loss = 0.0
+        valid_loss = 0.0
         with torch.no_grad():
-            for images, labels in test_loader:
+            for images, labels in valid_loader:
                 images, labels = images.to(device), labels.to(device)
                 outputs = model(images)
                 loss = criterion(outputs, labels)
-                test_loss += loss.item() * len(images)
+                valid_loss += loss.item() * len(images)
 
-        test_losses.append(test_loss / len(test_loader))
-        print(f"Epoch[{epoch + 1}/{num_epochs}], Train Loss:{train_losses[-1]:.4f}, Test Loss:{test_losses[-1]:.4f}")
+        valid_losses.append(valid_loss / len(valid_loader))
+        print(
+            f"Epoch[{epoch + 1}/{num_epochs}], Train Loss:{train_losses[-1]:.4f}, Validation Loss:{valid_losses[-1]:.4f}")
 
-    return train_losses, test_losses
+        # Early Stop?
+        if stop_early_params is None:
+            continue
+
+        if current_min_valid_loss - stop_early_params["min_delta"] > valid_losses[-1]:  # Validation loss decreases
+            current_min_valid_loss = valid_losses[-1]
+            current_optimized_model = copy.deepcopy(model)
+            num_overfit_epochs = (num_overfit_epochs - 1) if num_overfit_epochs > 0 else 0
+        else:  # Validation loss increases
+            num_overfit_epochs += 1
+
+        if num_overfit_epochs > stop_early_params["patience"]:
+            print(f"Early stopping at epoch {epoch + 1}.")
+            model = current_optimized_model
+            break
+
+    return train_losses, valid_losses
 
 
 # ============================= experiment3.py ============================= #

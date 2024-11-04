@@ -1,3 +1,4 @@
+import copy
 import random
 from collections import OrderedDict
 from typing import Tuple, Union, List, OrderedDict as TypingOrderedDict, Optional
@@ -10,12 +11,13 @@ from torch.utils.data import Dataset
 
 
 class SVHNDataset(Dataset):
-    def __init__(self, mat_file, transform_component=None):
+    def __init__(self, mat_file, transform=None):
         data = sio.loadmat(mat_file)
+
         self.images = np.transpose(data['X'], (3, 0, 1, 2))
         self.labels = data['y'].flatten()
         self.labels[self.labels == 10] = 0
-        self.transform = transform_component
+        self.transform = transform  # Allow postponed injection of transform.
 
     def __len__(self):
         return len(self.labels)
@@ -24,10 +26,48 @@ class SVHNDataset(Dataset):
         image = self.images[idx]
         label = self.labels[idx]
 
-        if self.transform:
-            image = self.transform(image=image)['image']
+        # There should always be a transform.
+        # It converts image to float, and permutes it from (32, 32, 3) to Tensor([3, 32, 32]).
+        # ...which is important!!
+        if self.transform is None:
+            raise ValueError(
+                "CISC3024 Custom Error: The transform should not be None when this object is passed into a DataLoader.")
 
+        image = self.transform(image=image)['image']
         return image, label
+
+    def get_meanstd(self, bias=None):
+        if bias is not None:
+            random_bias = random.randint(0, bias)
+            images_ = []
+            for i in range(len(self.images)):
+                image = self.images[i]
+                image = image.astype(np.int16)
+                image = (image + random_bias) % 256
+                image = image.astype(np.uint8)
+                images_.append(image)
+            images_ = np.array(images_)
+        else:
+            images_ = self.images
+
+        images_ = images_.astype(np.float32) / 255.0
+        mean = np.mean(images_, axis=(0, 1, 2))
+        std = np.std(images_, axis=(0, 1, 2), ddof=0)
+
+        return mean.tolist(), std.tolist()
+
+    def overwrite(self, indices: Union[list, np.ndarray]):
+        """
+        Create a deep copy of the mother dataset instance and only keep the wanted
+        data samples, controlled by indices.
+        """
+        if any(index < 0 or index >= len(self.labels) for index in indices):
+            raise IndexError("CISC3024 Custom Error: One or more indices are out of bounds.")
+
+        new_dataset = copy.deepcopy(self)
+        new_dataset.images = self.images[indices]
+        new_dataset.labels = self.labels[indices]
+        return new_dataset
 
 
 class SmallVGG(nn.Module):
