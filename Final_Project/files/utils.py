@@ -1,3 +1,4 @@
+import copy
 import random
 from typing import Tuple, List, Union, OrderedDict as TypingOrderedDict
 from collections import OrderedDict
@@ -167,21 +168,21 @@ def train_and_evaluate(model,
 
 # ============================= experiment3.py ============================= #
 
-def _add_bias(data: np.array, bias: Union[int, Tuple[int, int]]) -> np.array:
-    if isinstance(bias, tuple):
-        bias1 = bias[0]
-        bias2 = bias[1]
-    else:
-        bias1 = 0
-        bias2 = bias
-
-    for i in range(data.shape[0]):
-        bias_value = random.randint(bias1, bias2)
-        img = data[i].astype(np.int16)
-        img = (img + bias_value) % 256
-        data[i] = img.astype(np.uint8)
-
-    return data
+# def _add_bias(data: np.array, bias: Union[int, Tuple[int, int]]) -> np.array:
+#     if isinstance(bias, tuple):
+#         bias1 = bias[0]
+#         bias2 = bias[1]
+#     else:
+#         bias1 = 0
+#         bias2 = bias
+#
+#     for i in range(data.shape[0]):
+#         bias_value = random.randint(bias1, bias2)
+#         img = data[i].astype(np.int16)
+#         img = (img + bias_value) % 256
+#         data[i] = img.astype(np.uint8)
+#
+#     return data
 
 
 # ============================= experiment4.py ============================= #

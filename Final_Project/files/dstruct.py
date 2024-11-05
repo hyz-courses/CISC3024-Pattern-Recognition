@@ -36,25 +36,29 @@ class SVHNDataset(Dataset):
         image = self.transform(image=image)['image']
         return image, label
 
-    def get_meanstd(self, bias=None):
-        if bias is not None:
-            random_bias = random.randint(0, bias)
+    def get_meanstd(self, contrast_factor=None):
+        if contrast_factor is not None:
+            random_cf = random.uniform(1 / contrast_factor, contrast_factor)
             images_ = []
             for i in range(len(self.images)):
                 image = self.images[i]
-                image = image.astype(np.int16)
-                image = (image + random_bias) % 256
-                image = image.astype(np.uint8)
-                images_.append(image)
+                image = np.clip(image.astype(np.float32) * random_cf, 0.0, 255.0)
+                images_.append(image.astype(np.uint8))
             images_ = np.array(images_)
         else:
             images_ = self.images
 
         images_ = images_.astype(np.float32) / 255.0
-        mean = np.mean(images_, axis=(0, 1, 2))
-        std = np.std(images_, axis=(0, 1, 2), ddof=0)
 
-        return mean.tolist(), std.tolist()
+        # mean = np.mean(images_, axis=(0, 1, 2))
+        # std = np.std(images_, axis=(0, 1, 2), ddof=0)
+
+        images_ = np.transpose(images_, (3, 0, 1, 2))
+        mean = [np.mean(x) for x in images_]
+        std = [np.std(x, ddof=0) for x in images_]
+
+        return mean, std
+        # return mean.tolist(), std.tolist()
 
     def overwrite(self, indices: Union[list, np.ndarray]):
         """
@@ -107,19 +111,35 @@ class SmallVGG(nn.Module):
         return x
 
 
-class AddBiasTransform:
-    def __init__(self, bias: Union[int, Tuple[int, int]]) -> None:
-        if isinstance(bias, tuple):
-            self.bias1 = bias[0]
-            self.bias2 = bias[1]
+# class AddBiasTransform:
+#     def __init__(self, bias: Union[int, Tuple[int, int]]) -> None:
+#         if isinstance(bias, tuple):
+#             self.bias1 = bias[0]
+#             self.bias2 = bias[1]
+#         else:
+#             self.bias1 = 0
+#             self.bias2 = bias
+#
+#     def __call__(self, img: np.ndarray) -> np.ndarray:
+#         _dtype = img.dtype
+#         bias_value = random.randint(self.bias1, self.bias2)
+#         img = (img.astype(np.int16) + bias_value) % 256
+#         return img.astype(_dtype)
+
+
+class ContrastEnhanceTransform:
+    def __init__(self, factor: Union[float, Tuple[float, float]]) -> None:
+        if isinstance(factor, tuple):
+            self.factor_min = factor[0]
+            self.factor_max = factor[1]
         else:
-            self.bias1 = 0
-            self.bias2 = bias
+            self.factor_min = 1 / factor  # TODO
+            self.factor_max = factor
 
     def __call__(self, img: np.ndarray) -> np.ndarray:
         _dtype = img.dtype
-        bias_value = random.randint(self.bias1, self.bias2)
-        img = (img.astype(np.int16) + bias_value) % 256
+        contrast_factor = random.uniform(self.factor_min, self.factor_max)
+        img = np.clip(img * contrast_factor, 0, 255)  # apply contrast enhancement
         return img.astype(_dtype)
 
 
@@ -255,13 +275,14 @@ candidate_seq: List[Tuple[TypingOrderedDict[str, Optional[nn.Module]], TypingOrd
         ('max4', nn.MaxPool2d(kernel_size=3, stride=2, padding=1)),
 
         ('inception5a', Inception(832, 256, 160, 320, 32, 128, 128)),
-        ('inception5b', Inception(832, 384, 192, 384, 48, 128, 128))
-    ]), OrderedDict([
+        ('inception5b', Inception(832, 384, 192, 384, 48, 128, 128)),
+
         ('avg1', nn.AdaptiveAvgPool2d((1, 1))),
         ('dropout1', nn.Dropout(0.4)),
+    ]), OrderedDict([
         ('fc1', nn.Linear(1024, 10))
     ]))
 ]
-candidate_seq_name = {'SmallVGG', 'LeNet-5', '2012AlexNet', '2014GoogLeNet', }
+candidate_seq_name = ['SmallVGG', 'LeNet-5', '2012AlexNet', '2014GoogLeNet', ]
 
 candidate_activation_func: List[nn.Module] = [nn.ReLU(), nn.ELU(), nn.LeakyReLU(), nn.SiLU()]
