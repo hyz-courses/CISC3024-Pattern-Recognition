@@ -13,13 +13,29 @@ from sklearn.metrics import (confusion_matrix, accuracy_score,
                              precision_score, recall_score,
                              f1_score, precision_recall_curve,
                              average_precision_score)
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 from tqdm import tqdm
 
 from dstruct import (SVHNDataset, SmallVGG)
 
 device_name = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
 device = torch.device(device_name)
+
+
+# ============================== Split ============================= #
+def split_train_valid(train_dataset, train_ratio):
+    ori_len = len(train_dataset)
+    train_size = int(train_ratio * ori_len)
+    valid_size = ori_len - train_size
+
+    # These are subsets!! Don't directly use them, or you will spend 2 hours solving for it.
+    train_subset, valid_subset = random_split(train_dataset, [train_size, valid_size])
+
+    # Re-construct two SVHNDataset object from indices
+    train_dataset_ = train_dataset.overwrite(indices=train_subset.indices)
+    valid_dataset_ = train_dataset.overwrite(indices=valid_subset.indices)
+
+    return train_dataset_, valid_dataset_
 
 
 # ============================== For Plotting ============================= #
@@ -168,21 +184,27 @@ def train_and_evaluate(model,
 
 # ============================= experiment3.py ============================= #
 
-# def _add_bias(data: np.array, bias: Union[int, Tuple[int, int]]) -> np.array:
-#     if isinstance(bias, tuple):
-#         bias1 = bias[0]
-#         bias2 = bias[1]
-#     else:
-#         bias1 = 0
-#         bias2 = bias
-#
-#     for i in range(data.shape[0]):
-#         bias_value = random.randint(bias1, bias2)
-#         img = data[i].astype(np.int16)
-#         img = (img + bias_value) % 256
-#         data[i] = img.astype(np.uint8)
-#
-#     return data
+def contrast(data: np.array,
+             factor: Union[float, Tuple[float, float]],
+             seed=114514) -> np.array:
+    random.seed(seed)
+    if isinstance(factor, tuple):
+        factor_min = factor[0]
+        factor_max = factor[1]
+    else:
+        factor_min = 1 / factor
+        factor_max = factor
+
+    _dtype = data.dtype
+
+    data = data.astype(np.float64)
+
+    for i in range(len(data)):
+        contrast_factor = random.uniform(factor_min, factor_max)
+        img = data[i] * contrast_factor
+        data[i] = np.clip(img, 0, 255)  # apply contrast enhancement
+
+    return data.astype(_dtype)
 
 
 # ============================= experiment4.py ============================= #

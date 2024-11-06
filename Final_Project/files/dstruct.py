@@ -50,15 +50,11 @@ class SVHNDataset(Dataset):
 
         images_ = images_.astype(np.float32) / 255.0
 
-        # mean = np.mean(images_, axis=(0, 1, 2))
-        # std = np.std(images_, axis=(0, 1, 2), ddof=0)
-
         images_ = np.transpose(images_, (3, 0, 1, 2))
         mean = [np.mean(x) for x in images_]
         std = [np.std(x, ddof=0) for x in images_]
 
         return mean, std
-        # return mean.tolist(), std.tolist()
 
     def overwrite(self, indices: Union[list, np.ndarray]):
         """

@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader
 
 import dstruct
 import dvalue
-from Final_Project.files.utils import train_and_evaluate, mix_seq_and_act
+from Final_Project.files.utils import train_and_evaluate, mix_seq_and_act, split_train_valid
 from dstruct import (SVHNDataset, ContrastEnhanceTransform, SmallVGG)
 
 device_name = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
@@ -22,7 +22,11 @@ path_dataset = os.path.exists("../data") and "../data/SVHN_mat" or "./data/SVHN_
 
 exp4_train_dataset = SVHNDataset(os.path.join(path_dataset, "train_32x32.mat"), transform=None)
 exp4_valid_dataset = SVHNDataset(os.path.join(path_dataset, "test_32x32.mat"), transform=None)
-# exp4_extra_dataset = SVHNDataset(mat_file=os.path.join(path_dataset, "extra_32x32.mat"), transform_component=None)
+
+# exp3_universal_train_dataset = SVHNDataset(mat_file=os.path.join(path_dataset, "train_32x32.mat"), transform=None)
+
+# exp3_train_dataset, exp3_valid_dataset = split_train_valid(exp3_universal_train_dataset, train_ratio=0.8)
+# del exp3_universal_train_dataset
 
 # ==================================================================== #
 

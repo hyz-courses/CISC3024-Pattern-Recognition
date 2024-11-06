@@ -1,33 +1,41 @@
 import os
+import random
+from typing import Union, Tuple
 
 import numpy as np
-import scipy.io as sio
 
-from Final_Project.files import dvalue
-from Final_Project.files.utils import _add_bias
+from Final_Project.files.dstruct import SVHNDataset
 
-# from Final_Project.files import utils, dstruct
-#
-# selected_seq = dstruct.candidate_seq[0]
-# selected_act = dstruct.candidate_activation_func[0]
-#
-# final_seq = utils.mix_seq_and_act(selected_seq, selected_act)
-#
-# print(final_seq)
+path_dataset = os.path.exists("../data") and "../data/SVHN_mat" or "./data/SVHN_mat"
+tmp = SVHNDataset(os.path.join(path_dataset, "train_32x32.mat"), transform=None)
 
 
-dir_path = os.path.exists("../data") and "../data/SVHN_mat" or "./data/SVHN_mat"
-train_path = os.path.join(dir_path, "train_32x32.mat")
+def contrast(data: np.array,
+             factor: Union[float, Tuple[float, float]],
+             seed=114514) -> np.array:
+    random.seed(seed)
+    if isinstance(factor, tuple):
+        factor_min = factor[0]
+        factor_max = factor[1]
+    else:
+        factor_min = 1 / factor
+        factor_max = factor
 
-train_data = np.transpose(sio.loadmat(train_path)['X'], (2, 0, 1, 3))
+    _dtype = data.dtype
 
-TRAIN_BIAS_norm_mean = []
-TRAIN_BIAS_norm_std = []
-for bias in dvalue.candidate_channel_biases:
-    tmp = _add_bias(train_data.copy(), bias)
-    tmp = tmp.astype(np.float32) / 255.0
+    data = data.astype(np.float64)
 
-    TRAIN_BIAS_norm_mean.append([np.mean(x) for x in tmp])
-    TRAIN_BIAS_norm_std.append([np.std(x, ddof=0) for x in tmp])
+    for i in range(len(data)):
+        contrast_factor = random.uniform(factor_min, factor_max)
+        img = data[i] * contrast_factor
+        data[i] = np.clip(img, 0, 255)  # apply contrast enhancement
 
-a=1
+    return data.astype(_dtype)
+
+
+a = contrast(tmp.images, 3, 114514)
+
+b = contrast(tmp.images, 3, 114514)
+
+print(a)
+print(b)
