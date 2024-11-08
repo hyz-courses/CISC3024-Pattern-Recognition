@@ -2,7 +2,7 @@ Final Project Source File, Preview HTML, and Report are [Here](Final_Project).
 
 Experiment sets/subsets are listed in the [Google Drive](https://drive.google.com/drive/folders/1SpnG2BSAXtR2b4Uza9Y7q3iZ23l2TTU9?usp=sharing) due to the large file size.
 
-Experiment Sets Structure:
+Experiment Set Structure:
 ```python
 [ # One experiment set: A list of experiment objects.
     { # One experiment object
