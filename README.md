@@ -16,7 +16,7 @@ Mai Jiajun, DC127853
         - [Project Slides](Final_Project/CISC3024_Final_Project_Slides_DC127853.pptx)
         - [Project Report PDF](Final_Project/CISC3024_Final_Project_Report_DC127853.pdf)
 
-2. Experiment sets/subsets are stored in the `.pth` files, they include hyper-parameter values, training and validation losses over epochs, and the model state. All of such files are listed in the [Google Drive](https://drive.google.com/drive/folders/1SpnG2BSAXtR2b4Uza9Y7q3iZ23l2TTU9?usp=sharing) due to the large file size.
+2. Experiment sets/subsets are stored in the `.pth` files, they include hyper-parameter values, training and validation losses over epochs, and the model state. All of such files are listed in the [Google Drive](https://drive.google.com/drive/folders/1SpnG2BSAXtR2b4Uza9Y7q3iZ23l2TTU9?usp=sharing) due to the large file size. Create a `model` folder in the root directory of the final project and put them into it.
 
 Experiment Set Structure:
 ```python
@@ -38,3 +38,5 @@ Experiment Set Structure:
     ...
 ]
 ```
+
+3. Dataset `.mat` files is also in the [Google Drive](https://drive.google.com/drive/u/0/folders/1pr9iEMgCk4kuQ7r_EPj_aP3IWA7nGqYS).  Create a `data` folder in the root directory of the final project and put them into it.
