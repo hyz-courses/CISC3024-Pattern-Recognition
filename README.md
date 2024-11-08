@@ -1,14 +1,17 @@
 CISC3024 Final Project: Classification of SVHN Dataset with VGG
 ==================================
 Huang Yanzhen, DC126732
+
 Mai Jiajun, DC127853
 
 1. Final project root directory is [Final_Project](Final_Project). Here are some quick accesses:
 - [Source `.ipynb` file](Final_Project/main.ipynb)
 - [Source `.ipynb` HTMLPreview](Final_Project/preview.html)
+- [Experiment Results Summary Table](Final_Project/Experiment_Results_Summary_Form.xlsx)
+
+Huang Yanzhen:
 - [Project Slides](Final_Project/CISC3024_Final_Project_Slides_DC126732.pptx)
 - [Project Report PDF](Final_Project/CISC3024_Final_Project_Report_DC126732.pdf)
-- [Experiment Results Summary Table](Final_Project/Experiment_Results_Summary_Form.xlsx)
 
 2. Experiment sets/subsets are stored in the `.pth` files, they include hyper-parameter values, training and validation losses over epochs, and the model state. All of such files are listed in the [Google Drive](https://drive.google.com/drive/folders/1SpnG2BSAXtR2b4Uza9Y7q3iZ23l2TTU9?usp=sharing) due to the large file size.
 
