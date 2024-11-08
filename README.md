@@ -1,3 +1,8 @@
+CISC3024 Final Project: Classification of SVHN Dataset with VGG
+==================================
+Huang Yanzhen, DC126732
+Mai Jiajun, DC127853
+
 1. Final project root directory is [Final_Project](Final_Project). Here are some quick accesses:
 - [Source `.ipynb` file](Final_Project/main.ipynb)
 - [Source `.ipynb` HTMLPreview](Final_Project/preview.html)
