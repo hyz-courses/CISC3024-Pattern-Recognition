@@ -8,16 +8,16 @@ Experiment Object Structure:
     {
         "HYPER_PARAM_0": CANDIDATE_VALUE_0_0,
         "HYPER_PARAM_1": CANDIDATE_VALUE_1_0,
-        "train_losses": train_losses,
-        "valid_losses": valid_losses,
-        "model_state_dict": exp1_model.state_dict()
+        "train_losses": train_losses_0,
+        "valid_losses": valid_losses_0,
+        "model_state_dict": exp_model_0.state_dict()
     },
     {
         "HYPER_PARAM_0": CANDIDATE_VALUE_0_1,
         "HYPER_PARAM_1": CANDIDATE_VALUE_1_1,
-        "train_losses": train_losses,
-        "valid_losses": valid_losses,
-        "model_state_dict": exp1_model.state_dict()
+        "train_losses": train_losses_1,
+        "valid_losses": valid_losses_1,
+        "model_state_dict": exp_model_1.state_dict()
     },
     ...
 ]
