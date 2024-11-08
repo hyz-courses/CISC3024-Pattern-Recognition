@@ -1,0 +1,52 @@
+2024-11-08 03:05:22,325 - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2024-11-08 03:05:22,326 - DEBUG - load_verify_locations cafile='E:\\Courses\\CISC3024-Pattern-Recognition\\cisc3024_pr_venv\\lib\\site-packages\\certifi\\cacert.pem'
+2024-11-08 03:05:22,327 - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2024-11-08 03:05:22,328 - DEBUG - Using proactor: IocpProactor
+2024-11-08 03:05:22,328 - DEBUG - load_verify_locations cafile='E:\\Courses\\CISC3024-Pattern-Recognition\\cisc3024_pr_venv\\lib\\site-packages\\certifi\\cacert.pem'
+2024-11-08 03:05:22,469 - DEBUG - Using proactor: IocpProactor
+2024-11-08 03:05:22,496 - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2024-11-08 03:05:22,497 - DEBUG - load_verify_locations cafile='E:\\Courses\\CISC3024-Pattern-Recognition\\cisc3024_pr_venv\\lib\\site-packages\\certifi\\cacert.pem'
+2024-11-08 03:05:22,650 - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2024-11-08 03:05:22,651 - DEBUG - load_verify_locations cafile='E:\\Courses\\CISC3024-Pattern-Recognition\\cisc3024_pr_venv\\lib\\site-packages\\certifi\\cacert.pem'
+2024-11-08 03:05:22,664 - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2024-11-08 03:05:22,665 - DEBUG - load_verify_locations cafile='E:\\Courses\\CISC3024-Pattern-Recognition\\cisc3024_pr_venv\\lib\\site-packages\\certifi\\cacert.pem'
+2024-11-08 03:05:22,900 - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2024-11-08 03:05:22,900 - DEBUG - load_verify_locations cafile='E:\\Courses\\CISC3024-Pattern-Recognition\\cisc3024_pr_venv\\lib\\site-packages\\certifi\\cacert.pem'
+2024-11-08 03:05:23,038 - DEBUG - connect_tcp.started host='api.gradio.app' port=443 local_address=None timeout=3 socket_options=None
+2024-11-08 03:05:23,054 - DEBUG - connect_tcp.started host='checkip.amazonaws.com' port=443 local_address=None timeout=3 socket_options=None
+2024-11-08 03:05:23,126 - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x0000022583113F70>
+2024-11-08 03:05:23,126 - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x0000022582E03DC0> server_hostname='checkip.amazonaws.com' timeout=3
+2024-11-08 03:05:23,157 - DEBUG - connect_tcp.started host='127.0.0.1' port=53651 local_address=None timeout=None socket_options=None
+2024-11-08 03:05:23,182 - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x0000022583113DC0>
+2024-11-08 03:05:23,182 - DEBUG - send_request_headers.started request=<Request [b'GET']>
+2024-11-08 03:05:23,182 - DEBUG - send_request_headers.complete
+2024-11-08 03:05:23,182 - DEBUG - send_request_body.started request=<Request [b'GET']>
+2024-11-08 03:05:23,182 - DEBUG - send_request_body.complete
+2024-11-08 03:05:23,182 - DEBUG - receive_response_headers.started request=<Request [b'GET']>
+2024-11-08 03:05:23,234 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'Date', b'Thu, 07 Nov 2024 19:05:21 GMT'), (b'Content-Type', b'text/plain;charset=UTF-8'), (b'Content-Length', b'15'), (b'Connection', b'keep-alive'), (b'Server', b'nginx'), (b'Vary', b'Origin'), (b'Vary', b'Access-Control-Request-Method'), (b'Vary', b'Access-Control-Request-Headers')])
+2024-11-08 03:05:23,235 - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2024-11-08 03:05:23,235 - DEBUG - receive_response_body.started request=<Request [b'GET']>
+2024-11-08 03:05:23,235 - DEBUG - receive_response_body.complete
+2024-11-08 03:05:23,235 - DEBUG - response_closed.started
+2024-11-08 03:05:23,235 - DEBUG - response_closed.complete
+2024-11-08 03:05:23,235 - DEBUG - close.started
+2024-11-08 03:05:23,235 - DEBUG - close.complete
+2024-11-08 03:05:23,237 - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x0000022583113880>
+2024-11-08 03:05:23,237 - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x0000022582E03E40> server_hostname='api.gradio.app' timeout=3
+2024-11-08 03:05:23,240 - DEBUG - Starting new HTTPS connection (1): huggingface.co:443
+2024-11-08 03:05:23,493 - DEBUG - https://huggingface.co:443 "HEAD /api/telemetry/gradio/initiated HTTP/11" 200 0
+2024-11-08 03:05:23,588 - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x0000022582E1CE20>
+2024-11-08 03:05:23,589 - DEBUG - send_request_headers.started request=<Request [b'GET']>
+2024-11-08 03:05:23,589 - DEBUG - send_request_headers.complete
+2024-11-08 03:05:23,589 - DEBUG - send_request_body.started request=<Request [b'GET']>
+2024-11-08 03:05:23,589 - DEBUG - send_request_body.complete
+2024-11-08 03:05:23,589 - DEBUG - receive_response_headers.started request=<Request [b'GET']>
+2024-11-08 03:05:23,764 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Thu, 07 Nov 2024 19:05:22 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'21'), (b'Connection', b'keep-alive'), (b'Server', b'nginx/1.18.0'), (b'Access-Control-Allow-Origin', b'*')])
+2024-11-08 03:05:23,764 - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2024-11-08 03:05:23,765 - DEBUG - receive_response_body.started request=<Request [b'GET']>
+2024-11-08 03:05:23,765 - DEBUG - receive_response_body.complete
+2024-11-08 03:05:23,765 - DEBUG - response_closed.started
+2024-11-08 03:05:23,765 - DEBUG - response_closed.complete
+2024-11-08 03:05:23,765 - DEBUG - close.started
+2024-11-08 03:05:23,765 - DEBUG - close.complete
+2024-11-08 03:05:25,168 - DEBUG - connect_tcp.failed exception=ConnectError(ConnectionRefusedError(10061, 'No connection could be made because the target machine actively refused it', None, 10061, None))
